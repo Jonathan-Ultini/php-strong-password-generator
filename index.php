@@ -1,3 +1,9 @@
+<?php
+session_start(); // Avvia la sessione
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="it">
 
@@ -67,11 +73,12 @@
         if ($lunghezzaPassword > 0) {
           $passwordGenerata = generaPassword($lunghezzaPassword, $consentiRipetizioni, $includeLettere, $includeNumeri, $includeSimboli);
 
-          // Output della password generata
-          echo '<div class="output-container mt-4">';
-          echo '<strong>Password generata: </strong>';
-          echo '<p>' . ($passwordGenerata) . '</p>';
-          echo '</div>';
+          // Salva la password nella sessione
+          $_SESSION['password'] = $passwordGenerata;
+
+          // Redirect alla pagina password.php
+          header('Location: password.php');
+          exit(); // Termina l'esecuzione dello script dopo il redirect
         } else {
           echo '<div class="output-container mt-4">';
           echo '<strong>Nessun parametro valido inserito.</strong>';
