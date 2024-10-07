@@ -19,7 +19,7 @@
       <form method="GET">
         <div class="mb-3">
           <label for="lunghezza" class="form-label">Lunghezza password:</label>
-          <input type="number" id="lunghezza" name="lunghezza" class="form-control" min="1" required>
+          <input type="number" id="lunghezza" name="lunghezza" class="form-control" min="1">
         </div>
         <div class="mb-3">
           <label class="form-label">Consenti ripetizioni di uno o più caratteri:</label>
@@ -49,9 +49,80 @@
         </div>
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary">Invia</button>
-          <button type="reset" class="btn btn-secondary">Annulla</button>
+          <a href="index.php" class="btn btn-secondary">Reset</a>
         </div>
       </form>
+
+
+      <?php
+      function generaPassword($lunghezza, $consentiRipetizioni, $includeLettere, $includeNumeri, $includeSimboli)
+      {
+        $caratteri = [];
+
+        // Aggiungi lettere minuscole e maiuscole
+        if ($includeLettere) {
+          $caratteri = array_merge($caratteri, range('a', 'z'));
+          $caratteri = array_merge($caratteri, range('A', 'Z'));
+        }
+        // Aggiungi numeri
+        if ($includeNumeri) {
+          $caratteri = array_merge($caratteri, range('0', '9'));
+        }
+        // Aggiungi simboli
+        if ($includeSimboli) {
+          $caratteri = array_merge($caratteri, str_split('!@#$%^&*()_+-=[]{}|;:,.<>?'));
+        }
+
+        // Controlla se ci sono caratteri validi
+        if (empty($caratteri)) {
+          return "Nessun parametro valido inserito.";
+        }
+
+        // Genera la password
+        $passwordGenerata = '';
+        $max = count($caratteri) - 1;
+
+        for ($i = 0; $i < $lunghezza; $i++) {
+          if ($consentiRipetizioni) {
+            $passwordGenerata .= $caratteri[rand(0, $max)];
+          } else {
+            do {
+              $carattere = $caratteri[rand(0, $max)];
+            } while (strpos($passwordGenerata, $carattere) !== false);
+            $passwordGenerata .= $carattere;
+          }
+        }
+
+        return $passwordGenerata;
+      }
+
+      // Utilizzo della funzione
+      if (isset($_GET['lunghezza'])) {
+        $lunghezzaPassword = (int)$_GET['lunghezza'];
+        $consentiRipetizioni = isset($_GET['ripetizioni']) && $_GET['ripetizioni'] === 'si';
+        $includeLettere = isset($_GET['lettere']);
+        $includeNumeri = isset($_GET['numeri']);
+        $includeSimboli = isset($_GET['simboli']);
+
+        if ($lunghezzaPassword > 0) {
+          $passwordGenerata = generaPassword($lunghezzaPassword, $consentiRipetizioni, $includeLettere, $includeNumeri, $includeSimboli);
+
+          // Output della password generata
+          echo '<div class="output-container mt-4">';
+          echo '<strong>Password generata: </strong>';
+          echo '<p>' . ($passwordGenerata) . '</p>';
+          echo '</div>';
+        } else {
+          echo '<div class="output-container mt-4">';
+          echo '<strong>Nessun parametro valido inserito.</strong>';
+          echo '</div>';
+        }
+      }
+      ?>
+
+
+
+
     </div>
   </div>
 
